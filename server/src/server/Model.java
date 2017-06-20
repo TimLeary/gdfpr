@@ -3,6 +3,7 @@ package server;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,11 +13,16 @@ public abstract class Model implements Data {
     
     public static void openConnection() {
         try {
+            Properties properties = new Properties();
+            properties.setProperty("user", USERNAME);
+            properties.setProperty("password", PASSWORD);
+            properties.setProperty("useSSL", "false");
+            properties.setProperty("autoReconnect", "false");
+            
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(
                 URL,
-                USERNAME,
-                PASSWORD
+                properties
             );
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());

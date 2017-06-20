@@ -1,8 +1,14 @@
 package server;
 
+/**
+ * 
+ * [mysqld]
+ * lower_case_table_names = 1
+ */
+
 public interface Data {
     String DRIVER = "com.mysql.jdbc.Driver";
-    String URL = "jdbc:mysql://localhost:3306/hr";
+    String URL = "jdbc:mysql://localhost:3306/hr?autoReconnect=true&useSSL=false";
     String USERNAME = "root";
     String PASSWORD = "a";
     String SQL_DEPARTMENTS = "SELECT DISTINCT d.department_name AS depName \n" +
@@ -10,11 +16,11 @@ public interface Data {
         "WHERE d.department_id = e.department_id\n" +
         "GROUP BY d.department_name";
     
-    String SQL_DEPARTMENT_WORKERS = "SELECT d.department_name AS depName,\n" +
-        "concat(first_name,' ',e.last_name) AS empName,\n" +
-        "e.employee_id AS empId\n" +
-        "FROM departments d, employees e\n" +
-        "WHERE d.department_id = e.department_id\n" +
+    String SQL_DEPARTMENT_WORKERS = "SELECT d.department_name AS depName, " +
+        "concat(first_name,' ',e.last_name) AS empName, " +
+        "e.employee_id AS empId " +
+        "FROM departments d, employees e " +
+        "WHERE d.department_id = e.department_id " +
         "ORDER BY depName ASC, empName ASC";
     
     String SQL_WORKER_FROM_DEPARTMENT = "SELECT concat(first_name,' ',e.last_name) AS empName \n" +
