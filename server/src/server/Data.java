@@ -1,71 +1,69 @@
 package server;
 
 public interface Data {
-    String URL = "jdbc:oracle:thin:@localhost:1521:xe";
-    String DRIVER = "oracle.jdbc.driver.OracleDriver";
-    String USERNAME = "HR";
-    String PASSWORD = "hr";
-    String SQL_DEPARTMENTS = "SELECT DISTINCT D.DEPARTMENT_NAME AS depName " +
-        "FROM DEPARTMENTS D, EMPLOYEES E " +
-        "WHERE D.DEPARTMENT_ID = E.DEPARTMENT_ID " +
-        "GROUP BY D.DEPARTMENT_NAME";
+    String DRIVER = "com.mysql.jdbc.Driver";
+    String URL = "jdbc:mysql://localhost:3306/hr";
+    String USERNAME = "root";
+    String PASSWORD = "a";
+    String SQL_DEPARTMENTS = "SELECT DISTINCT d.department_name AS depName \n" +
+        "FROM departments d, employees e\n" +
+        "WHERE d.department_id = e.department_id\n" +
+        "GROUP BY d.department_name";
     
-    String SQL_DEPARTMENT_WORKERS = "SELECT D.DEPARTMENT_NAME AS depName, " +
-        "E.FIRST_NAME || ' '  || E.LAST_NAME AS empName, " +
-        "E.EMPLOYEE_ID AS empId " +
-        "FROM DEPARTMENTS D, EMPLOYEES E " +
-        "WHERE D.DEPARTMENT_ID = E.DEPARTMENT_ID " +
-        "ORDER BY depName, empName";
+    String SQL_DEPARTMENT_WORKERS = "SELECT d.department_name AS depName,\n" +
+        "concat(first_name,' ',e.last_name) AS empName,\n" +
+        "e.employee_id AS empId\n" +
+        "FROM departments d, employees e\n" +
+        "WHERE d.department_id = e.department_id\n" +
+        "ORDER BY depName ASC, empName ASC";
     
-    String SQL_WORKER_FROM_DEPARTMENT = "SELECT E.FIRST_NAME || ' ' || E.LAST_NAME AS EMPNAME " +
-        "FROM DEPARTMENTS D, EMPLOYEES E WHERE E.DEPARTMENT_ID=D.DEPARTMENT_ID " +
-        "AND D.DEPARTMENT_NAME=? ORDER BY EMPNAME";
+    String SQL_WORKER_FROM_DEPARTMENT = "SELECT concat(first_name,' ',e.last_name) AS empName \n" +
+        "FROM departments d, employees e\n" +
+        "WHERE d.department_id = e.department_id\n" +
+        "AND d.department_name=?\n" +
+        "ORDER BY empName ASC";
     
-    String SALARY_AND_MAX_SALARY_BY_WORKER_ID = "SELECT (B.SALARY * 0.9) AS maxSalary, W.SALARY as salary \n" +
-        "FROM EMPLOYEES W \n" +
-        "INNER JOIN EMPLOYEES B ON W.MANAGER_ID = B.EMPLOYEE_ID \n" +
-        "WHERE W.EMPLOYEE_ID =? \n" +
-        "UNION \n" +
-        "SELECT (SELECT SUM(SALARY) FROM EMPLOYEES) * 0.05 AS maxSalary, W.SALARY as salary \n" +
-        "FROM EMPLOYEES W \n" +
-        "WHERE W.MANAGER_ID IS NULL \n" +
-        "AND W.EMPLOYEE_ID =? ";
+    String SALARY_AND_MAX_SALARY_BY_WORKER_ID = "SELECT (b.salary * 0.9) AS maxSalary, w.salary as salary\n" +
+        "FROM employees w\n" +
+        "INNER JOIN employees b ON w.manager_id = b.employee_id\n" +
+        "WHERE w.employee_id =?\n" +
+        "UNION\n" +
+        "SELECT (SELECT SUM(salary) FROM employees) * 0.05 AS maxSalary, w.salary as salary\n" +
+        "FROM employees w\n" +
+        "WHERE w.manager_id IS NULL\n" +
+        "AND w.employee_id =?";
     
-    String UPDATE_SALARY_BY_WORKER_ID = "UPDATE EMPLOYEES E SET E.SALARY=? WHERE E.EMPLOYEE_ID=?";
+    String UPDATE_SALARY_BY_WORKER_ID = "UPDATE employees e SET e.salary=? WHERE e.employee_id=?";
     
-    String CREATE_EMPLOYEE_MIN = "INSERT INTO EMPLOYEES (" +
-        "  EMPLOYEE_ID," +
-        "  FIRST_NAME," +
-        "  LAST_NAME," +
-        "  EMAIL," +
-        "  HIRE_DATE," +
-        "  JOB_ID" +
+    String CREATE_EMPLOYEE_MIN = "INSERT INTO employees (" +
+        "  first_name," +
+        "  last_name," +
+        "  email," +
+        "  hire_date," +
+        "  job_id" +
         ") VALUES ( " +
-        "    (SELECT MAX(EMPLOYEE_ID)+1 FROM EMPLOYEES), " +
         "    '?', " +
         "    '?', " +
         "    '?', " +
-        "    SYSDATE, " +
+        "    now(), " +
         "    '?' " +
         ")";
     
-    String CREATE_EMPLOYEE_NORMAL = "INSERT INTO EMPLOYEES (" +
-        "  EMPLOYEE_ID," +
-        "  FIRST_NAME," +
-        "  LAST_NAME," +
-        "  EMAIL," +
-        "  HIRE_DATE," +
-        "  JOB_ID," +
-        "  PHONE_NUMBER," +
-        "  SALARY," +
-        "  MANAGER_ID," +
-        "  DEPARTMENT_ID " +
+    String CREATE_EMPLOYEE_NORMAL = "INSERT INTO employees (" +
+        "  first_name," +
+        "  last_name," +
+        "  email," +
+        "  hire_date," +
+        "  job_id," +
+        "  phone_number," +
+        "  salary," +
+        "  manager_id," +
+        "  department_id " +
         ") VALUES (" +
         "    ?," +
         "    ?," +
         "    ?," +
-        "    ?," +
-        "    SYSDATE," +
+        "    now()," +
         "    ?," +
         "    ?," +
         "    ?," +
@@ -77,20 +75,20 @@ public interface Data {
             "SELECT EMPLOYEES_SEQ.nextval\n"+
                     "FROM DUAL";
     
-    String SUM_SALARY_DATAS = "SELECT sum(SALARY) as sumSalary, count(EMPLOYEE_ID) as numEmployee FROM EMPLOYEES";
+    String SUM_SALARY_DATAS = "SELECT sum(salary) as sumSalary, count(employee_id) as numEmployee FROM employees";
     
-    String UPDATE_ALL_EMPLOYEE_BY_PERCENTAGE = "UPDATE EMPLOYEES E " +
-        "SET E.SALARY=(" +
-        "  SELECT (S.SALARY * ?)" +
-        "  FROM EMPLOYEES S" +
-        "  WHERE E.EMPLOYEE_ID = S.EMPLOYEE_ID)";
+    String UPDATE_ALL_EMPLOYEE_BY_PERCENTAGE = "UPDATE employees e " +
+        "SET e.salary=(" +
+        "  SELECT (s.salary * ?)" +
+        "  FROM employees s" +
+        "  WHERE e.employee_id = s.employee_id)";
     
-    String SQL_GET_JOBS_BY_DEPARTMENT = "SELECT DISTINCT J.JOB_ID as jobId, J.JOB_TITLE as jobTitle " +
-        "FROM EMPLOYEES E " +
-        "  INNER JOIN DEPARTMENTS D ON E.DEPARTMENT_ID = D.DEPARTMENT_ID " +
-        "  INNER JOIN JOBS J ON E.JOB_ID = J.JOB_ID " +
-        "WHERE D.DEPARTMENT_ID = ? "+
-            "ORDER BY jobTitle";
+    String SQL_GET_JOBS_BY_DEPARTMENT = "SELECT DISTINCT j.job_id as jobId, j.job_title as jobTitle " +
+        "FROM employees e " +
+        "  INNER JOIN departments d ON e.department_id = d.department_id " +
+        "  INNER JOIN jobs j ON e.job_id = j.job_id " +
+        "WHERE d.department_id = ? "+
+            "ORDER BY jobTitle ASC";
     
-    String SQL_LOAD_DEPARTMENTS = "SELECT DEPARTMENT_ID as depId, DEPARTMENT_NAME as depName, MANAGER_ID as manId FROM DEPARTMENTS ORDER BY depName";
+    String SQL_LOAD_DEPARTMENTS = "SELECT department_id as depId, department_name as depName, manager_id as manId FROM departments ORDER BY depName";
 }

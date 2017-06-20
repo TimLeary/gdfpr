@@ -181,13 +181,14 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == btLogin) {
+            System.out.println("Login");
             String username = tfUsername.getText();
             String password = String.copyValueOf(pfPassword.getPassword());
             
             try {
                 AuthInterface auth = (AuthInterface) Naming.lookup("rmi://localhost:1099/auth");
                 user = auth.login(username, password);
-                
+                System.out.println(user);
                 if(user != null) {
                     this.buildSurface();
                 }
