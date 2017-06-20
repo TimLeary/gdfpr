@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <user acl="worker">
+        <username>HR1</username>
+        <password>5f97acc1703998d0b3e9d726c39f219f</password>
+    </user>
+    <user acl="manager">
+        <username>HR2</username>
+        <password>c7a3672957cef7be3d906dd9277d4040</password>
+    </user>
+</root>
