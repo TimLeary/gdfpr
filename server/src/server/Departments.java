@@ -27,7 +27,6 @@ public class Departments extends UnicastRemoteObject implements DepartmentsInter
         String name = result.getString("depName");
         int managerId = result.getInt("manId");
         Department dept= new Department(id, name, managerId);
-        System.out.println(dept);
         list.add(dept);
       }
 
