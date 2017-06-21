@@ -216,10 +216,10 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
 
           if (treeDepEmpName.getLastSelectedPathComponent() != null)
           {
-            if (((DefaultMutableTreeNode)treeDepEmpName.getLastSelectedPathComponent()).isLeaf())
+            if (((DefaultMutableTreeNode)treeDepEmpName.getLastSelectedPathComponent()).isLeaf()){
               // employee is chosen
-              new View_Recruitment(this, ((DepartmentWorker)((DefaultMutableTreeNode) treeDepEmpName.getLastSelectedPathComponent()).getUserObject()).getDepartmentName());
-            else // dept is chosen
+                new View_Recruitment(this, ((DepartmentWorker)((DefaultMutableTreeNode) treeDepEmpName.getLastSelectedPathComponent()).getUserObject()).getDepartmentName());
+            } else // dept is chosen
               new View_Recruitment(this, ((DefaultMutableTreeNode)treeDepEmpName.getLastSelectedPathComponent()).toString());
           }
           else // nothing is chosen

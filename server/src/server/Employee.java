@@ -53,6 +53,7 @@ public class Employee extends UnicastRemoteObject implements EmployeeInterface, 
                 Integer workerId = result.getInt("empId");
                 String department = result.getString("depName");
                 String worker = result.getString("empName");
+                System.out.println(worker);
                 DepartmentWorker dw = new DepartmentWorker(workerId, department, worker);
                 list.add(dw);
             }
