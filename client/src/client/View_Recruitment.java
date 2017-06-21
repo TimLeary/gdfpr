@@ -58,7 +58,8 @@ public class View_Recruitment extends JDialog implements ActionListener, Documen
         this.addWindowListener(new WindowAdapter() {
           @Override
           public void windowClosing(WindowEvent e) {
-            abortRecruit();}
+            abortRecruit();
+          }
         });
         setSize(880, 310);
         setMinimumSize(new Dimension(880, 332));

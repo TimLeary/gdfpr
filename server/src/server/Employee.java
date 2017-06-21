@@ -53,7 +53,6 @@ public class Employee extends UnicastRemoteObject implements EmployeeInterface, 
                 Integer workerId = result.getInt("empId");
                 String department = result.getString("depName");
                 String worker = result.getString("empName");
-                System.out.println(worker);
                 DepartmentWorker dw = new DepartmentWorker(workerId, department, worker);
                 list.add(dw);
             }
@@ -125,6 +124,7 @@ public class Employee extends UnicastRemoteObject implements EmployeeInterface, 
             ps.setInt(8, newEmployee.getManagerId());
             ps.setInt(9, newEmployee.getDepId());
             ps.executeQuery();
+            
 
             return true;
         } catch (SQLException e) {
@@ -165,7 +165,7 @@ public class Employee extends UnicastRemoteObject implements EmployeeInterface, 
             PreparedStatement ps = Model.connection.prepareStatement(UPDATE_SALARY_BY_WORKER_ID);
             ps.setDouble(1, newSalary);
             ps.setInt(2, empToUpdate.getWorkerId());
-            ps.executeQuery();
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

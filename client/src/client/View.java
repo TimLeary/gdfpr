@@ -57,7 +57,7 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
     private DepartmentWorker actworker = null;
     private JLabel lbempInfo= new JLabel("<html><br><br>Dolgozó neve: " +"<br>Részleg neve: "+"<br><br>Dolgozó jelenlegi fizetése: "+"<br></html>");
     private JLabel lbIncreaseMax= new JLabel("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: -- , Max: --)</html>");
-    private JButton btSalIncrease=new JButton("<html><br>Fizetés módosítása<br><br></html>");
+    private JButton btChangeSalary=new JButton("<html><br>Fizetés módosítása<br><br></html>");
     private JSpinner spnIncreaseRate=new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
     private final int spinnerIncrement = 10;
     private JMenuItem miAdd=new JMenuItem("Új alkalmazott felvétele", KeyEvent.VK_A);
@@ -137,18 +137,18 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
           pnSalaryIncrease.setMinimumSize(new Dimension(500, 320));
           pnSalaryIncrease.setLayout(new BorderLayout());
           buildTree();
-          JPanel pnSalary = buildpnSalaryInfo();
+          JPanel pnSalary = buildPnSalaryInfo();
           pnSalaryIncrease.add(pnSalary, BorderLayout.EAST);
         }
         this.add(pnSalaryIncrease);
-        btSalIncrease.addActionListener(this);
-        btSalIncrease.getRootPane().setDefaultButton(btSalIncrease);
+        btChangeSalary.addActionListener(this);
+        btChangeSalary.getRootPane().setDefaultButton(btChangeSalary);
 
 
         this.revalidate();
     }
     
-     private JPanel buildpnSalaryInfo() { //a jobb oldali panel lenne
+     private JPanel buildPnSalaryInfo() { //a jobb oldali panel lenne
         JPanel pnSal = new JPanel();
         pnSal.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         pnSal.setPreferredSize(new Dimension(300, HEIGHT));
@@ -160,8 +160,8 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         spnIncreaseRate.setPreferredSize(new Dimension(100, HEIGHT));
         spnIncreaseRate.setEnabled(false);
         kisSouthGrid.add(spnIncreaseRate, BorderLayout.EAST);
-        btSalIncrease.setEnabled(false);
-        kisSouthGrid.add(btSalIncrease, BorderLayout.SOUTH);
+        btChangeSalary.setEnabled(false);
+        kisSouthGrid.add(btChangeSalary, BorderLayout.SOUTH);
         pnSal.add(kisSouthGrid, BorderLayout.SOUTH);
         return pnSal;
     }
@@ -188,7 +188,6 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
             try {
                 AuthInterface auth = (AuthInterface) Naming.lookup("rmi://localhost:1099/auth");
                 user = auth.login(username, password);
-                System.out.println(user);
                 if(user != null) {
                     this.buildSurface();
                 }
@@ -201,16 +200,18 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         this.setJMenuBar(null);
         pfPassword.setText("");
         this.remove(pnSalaryIncrease);
-        btSalIncrease.removeActionListener(this);
+        btChangeSalary.removeActionListener(this);
         miLogOff.removeActionListener(this);
         if(user.getAcl().equals("manager"))
           miAdd.removeActionListener(this);
 
         this.buildLogin();
       }
-      if(e.getSource() == btSalIncrease) {
+      
+      if(e.getSource() == btChangeSalary) {
         salaryIncreaseAction();
       }
+      
       if (e.getSource() == miAdd || e.getSource() == miAdd_popup){
         miAdd_popup.removeActionListener(this);
 
@@ -235,7 +236,7 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         if (selectedNode == null || !selectedNode.isLeaf()){
             lbempInfo.setText("<html><br><br>Dolgozó neve: "+"<br>Részleg neve: "+"<br><br>Dolgozó jelenlegi fizetése: "+"<br></html>");
             lbIncreaseMax.setText("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: -- , Max: --)</html>");
-            btSalIncrease.setEnabled(false);
+            btChangeSalary.setEnabled(false);
             spnIncreaseRate.setModel(new SpinnerNumberModel(0, 0, 0, 0));
             spnIncreaseRate.setEnabled(false);
             return;
@@ -255,7 +256,7 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
                     +(int)salaryModel.getMinSalary() + ", Max: "+
                   max + ")</html>");
             spinnerSet((int)salaryModel.getSalary(), (int)salaryModel.getMinSalary(), max, spinnerIncrement);
-            btSalIncrease.setEnabled(true);
+            btChangeSalary.setEnabled(true);
             spnIncreaseRate.setEnabled(true);
         }
     }
@@ -270,7 +271,7 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
               @Override
               public void keyTyped (KeyEvent e){ //hogy ne lehessen betűt begépelni
                 if (e.getKeyChar()==KeyEvent.VK_ENTER)
-                  btSalIncrease.requestFocus();
+                  btChangeSalary.requestFocus();
                 if (e.getKeyChar()<'0' || '9'<e.getKeyChar())
                   e.consume();
               }
@@ -278,7 +279,7 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
       }
 
   private void salaryIncreaseAction() {
-    try {
+        try {
             spnIncreaseRate.commitEdit();
         } catch (java.text.ParseException /*| NumberFormatException */ exc) {
             JOptionPane.showMessageDialog(this, "Érvénytelen fizetés.", "Hiba", JOptionPane.ERROR_MESSAGE);
@@ -286,11 +287,13 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
 
         ModifySalaryEmployee salaryModel = new ModifySalaryEmployee(actworker);
         int newSalary = (Integer) spnIncreaseRate.getValue();
+        
+        
+        System.out.println(newSalary);
 
         if (newSalary == salaryModel.getSalary()) {
             JOptionPane.showMessageDialog(this, "A jelenlegi fizetést adta meg. Nincs módosítás", "Jelenlegi fizetés", JOptionPane.WARNING_MESSAGE);
-        } else
-        {
+        } else {
           salaryModel.updateSalary(newSalary);
           lbempInfo.setText("<html><br><br>Dolgozó neve: "
                   + actworker.getWorkerName() + "<br>Részleg neve: "
@@ -336,9 +339,9 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
   {
     if(!((JFormattedTextField)e.getSource()).isEditValid())
     {
-      btSalIncrease.setEnabled(false);
+      btChangeSalary.setEnabled(false);
       JOptionPane.showMessageDialog(this, "Érvénytelen fizetést adott meg!", "Hiba", JOptionPane.ERROR_MESSAGE);
-      btSalIncrease.setEnabled(true);
+      btChangeSalary.setEnabled(true);
     }
   }
 

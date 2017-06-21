@@ -17,16 +17,12 @@ public interface Data {
         "GROUP BY d.department_name";
     
     String SQL_DEPARTMENT_WORKERS = "SELECT d.department_name AS depName, " +
-        /* "concat(e.first_name,' ',e.last_name) AS empName, " + */
         "concat(e.first_name,' ',e.last_name) empName, " +
-        /* "e.first_name AS empName, " + */
         "e.employee_id AS empId " +
         "FROM departments d, employees e " +
         "WHERE d.department_id = e.department_id " +
         "ORDER BY depName ASC, empName ASC";
     
-    /* String SQL_WORKER_FROM_DEPARTMENT = "SELECT concat(first_name,' ',e.last_name) AS empName \n" + */
-    /* String SQL_WORKER_FROM_DEPARTMENT = "SELECT e.first_name AS empName \n" + */
     String SQL_WORKER_FROM_DEPARTMENT = "SELECT " +
         "concat(e.first_name,' ',e.last_name) empName, " +
         "FROM departments d, employees e\n" +
