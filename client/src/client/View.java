@@ -42,8 +42,8 @@ import pkginterface.User;
 import pkginterface.DepartmentWorker;
 import pkginterface.ModifySalaryEmployee;
 
+public class View extends JFrame implements ActionListener, TreeSelectionListener, MouseListener, FocusListener {
 
-public class View extends JFrame implements ActionListener, TreeSelectionListener, MouseListener, FocusListener{
     private JPanel pnLogin = new JPanel();
     private JPanel pnSalaryIncrease = new JPanel();
     private JLabel lbUsername = new JLabel("Felhasználónév: ");
@@ -53,16 +53,16 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
     private JButton btLogin = new JButton("Bejelentkezés");
     private User user;
 
-    protected JTree treeDepEmpName=new JTree();
+    protected JTree treeDepEmpName = new JTree();
     private DepartmentWorker actworker = null;
-    private JLabel lbempInfo= new JLabel("<html><br><br>Dolgozó neve: " +"<br>Részleg neve: "+"<br><br>Dolgozó jelenlegi fizetése: "+"<br></html>");
-    private JLabel lbIncreaseMax= new JLabel("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: -- , Max: --)</html>");
-    private JButton btChangeSalary=new JButton("<html><br>Fizetés módosítása<br><br></html>");
-    private JSpinner spnIncreaseRate=new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
+    private JLabel lbempInfo = new JLabel("<html><br><br>Dolgozó neve: " + "<br>Részleg neve: " + "<br><br>Dolgozó jelenlegi fizetése: " + "<br></html>");
+    private JLabel lbIncreaseMax = new JLabel("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: -- , Max: --)</html>");
+    private JButton btChangeSalary = new JButton("<html><br>Fizetés módosítása<br><br></html>");
+    private JSpinner spnIncreaseRate = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
     private final int spinnerIncrement = 10;
-    private JMenuItem miAdd=new JMenuItem("Új alkalmazott felvétele", KeyEvent.VK_A);
-    private JMenuItem miAdd_popup=new JMenuItem("Új alkalmazott felvétele", KeyEvent.VK_A);
-    private JMenuItem miLogOff=new JMenuItem("Kijelentkezés", KeyEvent.VK_K);
+    private JMenuItem miAdd = new JMenuItem("Új alkalmazott felvétele", KeyEvent.VK_A);
+    private JMenuItem miAdd_popup = new JMenuItem("Új alkalmazott felvétele", KeyEvent.VK_A);
+    private JMenuItem miLogOff = new JMenuItem("Kijelentkezés", KeyEvent.VK_K);
 
     public View() throws HeadlessException {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -72,42 +72,40 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         buildLogin();
         setVisible(true);
     }
-    
-    
-    
+
     private void buildLogin() {
         setTitle("Bejelentkezés");
         Dimension d = new Dimension(520, 320);
         pnLogin.setSize(d);
         pnLogin.setMaximumSize(d);
         pnLogin.setLayout(new GridBagLayout());
-        GridBagConstraints gbc=new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
         tfUsername.setSize(50, 24);
         pfPassword.setSize(50, 24);
-        
+
         btLogin.addActionListener(this);
-        
-        gbc.gridx=0;
-        gbc.gridy=0;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         pnLogin.add(lbUsername, gbc);
-        gbc.gridx=1;
+        gbc.gridx = 1;
         pnLogin.add(tfUsername, gbc);
-        gbc.gridx=0;
-        gbc.gridy=1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         pnLogin.add(lbPassword, gbc);
-        gbc.gridx=1;
+        gbc.gridx = 1;
         pnLogin.add(pfPassword, gbc);
-        gbc.gridx=0;
-        gbc.gridy=2;
-        gbc.gridwidth=2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
         pnLogin.add(btLogin, gbc);
-        
+
         this.add(pnLogin);
         btLogin.getRootPane().setDefaultButton(btLogin);
 
         this.revalidate();
     }
-    
+
     private void buildSurface() {
         setTitle("HR nyilvántartás");
         pnSalaryIncrease.setSize(500, 320);
@@ -125,7 +123,7 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         mAcc.add(miLogOff);
         menuBar.add(mAcc);
 
-        if(user.getAcl().equals("manager")) {
+        if (user.getAcl().equals("manager")) {
             miAdd.addActionListener(this);
 
             mEdit.add(miAdd);
@@ -134,39 +132,38 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         setJMenuBar(menuBar);
 
         if (!(pnSalaryIncrease.isMinimumSizeSet())) {
-          pnSalaryIncrease.setMinimumSize(new Dimension(500, 320));
-          pnSalaryIncrease.setLayout(new BorderLayout());
-          buildTree();
-          JPanel pnSalary = buildPnSalaryInfo();
-          pnSalaryIncrease.add(pnSalary, BorderLayout.EAST);
+            pnSalaryIncrease.setMinimumSize(new Dimension(500, 320));
+            pnSalaryIncrease.setLayout(new BorderLayout());
+            buildTree();
+            JPanel pnSalary = buildPnSalaryInfo();
+            pnSalaryIncrease.add(pnSalary, BorderLayout.EAST);
         }
         this.add(pnSalaryIncrease);
         btChangeSalary.addActionListener(this);
         btChangeSalary.getRootPane().setDefaultButton(btChangeSalary);
 
-
         this.revalidate();
     }
-    
-     private JPanel buildPnSalaryInfo() { //a jobb oldali panel lenne
-        JPanel pnSal = new JPanel();
-        pnSal.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
-        pnSal.setPreferredSize(new Dimension(300, HEIGHT));
-        pnSal.setLayout(new BorderLayout(20, 20));
-        pnSal.add(lbempInfo, BorderLayout.NORTH);
-        JPanel kisSouthGrid = new JPanel(new BorderLayout(0, 20));
-        kisSouthGrid.add(lbIncreaseMax, BorderLayout.WEST);
+
+    private JPanel buildPnSalaryInfo() {
+        JPanel pnSalary = new JPanel();
+        pnSalary.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
+        pnSalary.setPreferredSize(new Dimension(300, HEIGHT));
+        pnSalary.setLayout(new BorderLayout(20, 20));
+        pnSalary.add(lbempInfo, BorderLayout.NORTH);
+        JPanel pnSouthGrid = new JPanel(new BorderLayout(0, 20));
+        pnSouthGrid.add(lbIncreaseMax, BorderLayout.WEST);
         spnIncreaseRate.setFont(new Font("Tahoma", 1, 14));
         spnIncreaseRate.setPreferredSize(new Dimension(100, HEIGHT));
         spnIncreaseRate.setEnabled(false);
-        kisSouthGrid.add(spnIncreaseRate, BorderLayout.EAST);
+        pnSouthGrid.add(spnIncreaseRate, BorderLayout.EAST);
         btChangeSalary.setEnabled(false);
-        kisSouthGrid.add(btChangeSalary, BorderLayout.SOUTH);
-        pnSal.add(kisSouthGrid, BorderLayout.SOUTH);
-        return pnSal;
+        pnSouthGrid.add(btChangeSalary, BorderLayout.SOUTH);
+        pnSalary.add(pnSouthGrid, BorderLayout.SOUTH);
+        return pnSalary;
     }
 
-    private void buildTree(){
+    private void buildTree() {
         DefaultTreeModel treeModel = Model.getEmployeeTreeModel();
         treeDepEmpName.setModel(treeModel);
         treeDepEmpName.addTreeSelectionListener(this);
@@ -174,57 +171,63 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         treeDepEmpName.addMouseListener(this);
         treeDepEmpName.setRootVisible(false);
         treeDepEmpName.setExpandsSelectedPaths(true);
-        JScrollPane spTree=new JScrollPane(treeDepEmpName);
+        JScrollPane spTree = new JScrollPane(treeDepEmpName);
         pnSalaryIncrease.add(spTree, BorderLayout.CENTER);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == btLogin) {
-            System.out.println("Login");
-            String username = tfUsername.getText();
-            String password = String.copyValueOf(pfPassword.getPassword());
-            
-            try {
-                AuthInterface auth = (AuthInterface) Naming.lookup("rmi://localhost:1099/auth");
-                user = auth.login(username, password);
-                if(user != null) {
-                    this.buildSurface();
-                }
+    private void checkLoginAction() {
+        String username = tfUsername.getText();
+        String password = String.copyValueOf(pfPassword.getPassword());
 
-            } catch (MalformedURLException | NotBoundException | RemoteException ex) {
-                ex.printStackTrace();
+        try {
+            AuthInterface auth = (AuthInterface) Naming.lookup("rmi://localhost:1099/auth");
+            user = auth.login(username, password);
+            if (user != null) {
+                this.buildSurface();
             }
+        } catch (MalformedURLException | NotBoundException | RemoteException ex) {
+            ex.printStackTrace();
         }
-      if (e.getSource()==miLogOff){
+    }
+    
+    private void logoutAction(){
         this.setJMenuBar(null);
         pfPassword.setText("");
         this.remove(pnSalaryIncrease);
         btChangeSalary.removeActionListener(this);
         miLogOff.removeActionListener(this);
-        if(user.getAcl().equals("manager"))
-          miAdd.removeActionListener(this);
+        if (user.getAcl().equals("manager")) {
+            miAdd.removeActionListener(this);
+        }
 
         this.buildLogin();
-      }
-      
-      if(e.getSource() == btChangeSalary) {
-        salaryIncreaseAction();
-      }
-      
-      if (e.getSource() == miAdd || e.getSource() == miAdd_popup){
-        miAdd_popup.removeActionListener(this);
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btLogin) {
+            checkLoginAction();
+        } else if (e.getSource() == miLogOff) {
+            logoutAction();
+        } else if (e.getSource() == btChangeSalary) {
+            salaryIncreaseAction();
+        }
 
-          if (treeDepEmpName.getLastSelectedPathComponent() != null)
-          {
-            if (((DefaultMutableTreeNode)treeDepEmpName.getLastSelectedPathComponent()).isLeaf()){
-              // employee is chosen
-                new View_Recruitment(this, ((DepartmentWorker)((DefaultMutableTreeNode) treeDepEmpName.getLastSelectedPathComponent()).getUserObject()).getDepartmentName());
-            } else // dept is chosen
-              new View_Recruitment(this, ((DefaultMutableTreeNode)treeDepEmpName.getLastSelectedPathComponent()).toString());
-          }
-          else // nothing is chosen
-            new View_Recruitment(this, null);
+        if (e.getSource() == miAdd || e.getSource() == miAdd_popup) {
+            miAdd_popup.removeActionListener(this);
+
+            if (treeDepEmpName.getLastSelectedPathComponent() != null) {
+                if (((DefaultMutableTreeNode) treeDepEmpName.getLastSelectedPathComponent()).isLeaf()) {
+                    // employee is chosen
+                    new View_Recruitment(this, ((DepartmentWorker) ((DefaultMutableTreeNode) treeDepEmpName.getLastSelectedPathComponent()).getUserObject()).getDepartmentName());
+                } else // dept is chosen
+                {
+                    new View_Recruitment(this, ((DefaultMutableTreeNode) treeDepEmpName.getLastSelectedPathComponent()).toString());
+                }
+            } else // nothing is chosen
+            {
+                new View_Recruitment(this, null);
+            }
         }
     }
 
@@ -232,57 +235,64 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
     public void valueChanged(TreeSelectionEvent e) {
         JTree tree = (JTree) e.getSource();
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-        
-        if (selectedNode == null || !selectedNode.isLeaf()){
-            lbempInfo.setText("<html><br><br>Dolgozó neve: "+"<br>Részleg neve: "+"<br><br>Dolgozó jelenlegi fizetése: "+"<br></html>");
+
+        if (selectedNode == null || !selectedNode.isLeaf()) {
+            lbempInfo.setText("<html><br><br>Dolgozó neve: " + "<br>Részleg neve: " + "<br><br>Dolgozó jelenlegi fizetése: " + "<br></html>");
             lbIncreaseMax.setText("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: -- , Max: --)</html>");
             btChangeSalary.setEnabled(false);
             spnIncreaseRate.setModel(new SpinnerNumberModel(0, 0, 0, 0));
             spnIncreaseRate.setEnabled(false);
             return;
         }
-        
+
         Object nodeInfo = selectedNode.getUserObject();
-        if (nodeInfo instanceof DepartmentWorker){
+        if (nodeInfo instanceof DepartmentWorker) {
             actworker = (DepartmentWorker) nodeInfo;
             ModifySalaryEmployee salaryModel = new ModifySalaryEmployee(actworker);
             int max = (int) Math.min(salaryModel.getSalary() * 1.05, Math.max(salaryModel.getSalary(), salaryModel.getMaxSalary()));
 
-            lbempInfo.setText("<html><br><br>Dolgozó neve: "+
-                    actworker.getWorkerName()+"<br>Részleg neve: "+
-                    actworker.getDepartmentName()+"<br><br>Dolgozó jelenlegi fizetése: "+
-                    (int)salaryModel.getSalary()+"<br></html>");
-          lbIncreaseMax.setText("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: "+
-                    +(int)salaryModel.getMinSalary() + ", Max: "+
-                  max + ")</html>");
-            spinnerSet((int)salaryModel.getSalary(), (int)salaryModel.getMinSalary(), max, spinnerIncrement);
+            lbempInfo.setText("<html><br><br>Dolgozó neve: "
+                    + actworker.getWorkerName() + "<br>Részleg neve: "
+                    + actworker.getDepartmentName() + "<br><br>Dolgozó jelenlegi fizetése: "
+                    + (int) salaryModel.getSalary() + "<br></html>");
+            lbIncreaseMax.setText("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: "
+                    + +(int) salaryModel.getMinSalary() + ", Max: "
+                    + max + ")</html>");
+            spinnerSet((int) salaryModel.getSalary(), (int) salaryModel.getMinSalary(), max, spinnerIncrement);
             btChangeSalary.setEnabled(true);
             spnIncreaseRate.setEnabled(true);
         }
     }
 
-      public void spinnerSet(int actSalary, int minSalary, int maxSalary , int increment){
+    public void spinnerSet(int actSalary, int minSalary, int maxSalary, int increment) {
         spnIncreaseRate.setModel(new SpinnerNumberModel(actSalary, minSalary, maxSalary, increment));
         JFormattedTextField txt = ((JSpinner.NumberEditor) spnIncreaseRate.getEditor()).getTextField();
 
         txt.addFocusListener(this);
 
         txt.addKeyListener(new KeyAdapter() {
-              @Override
-              public void keyTyped (KeyEvent e){ //hogy ne lehessen betűt begépelni
-                if (e.getKeyChar()==KeyEvent.VK_ENTER)
-                  btChangeSalary.requestFocus();
-                if (e.getKeyChar()<'0' || '9'<e.getKeyChar())
-                  e.consume();
-              }
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                    btChangeSalary.requestFocus();
+                }
+                if (e.getKeyChar() < '0' || '9' < e.getKeyChar()) {
+                    e.consume();
+                }
+            }
         });
-      }
+    }
 
-  private void salaryIncreaseAction() {
+    private void salaryIncreaseAction() {
         try {
             spnIncreaseRate.commitEdit();
-        } catch (java.text.ParseException /*| NumberFormatException */ exc) {
-            JOptionPane.showMessageDialog(this, "Érvénytelen fizetés.", "Hiba", JOptionPane.ERROR_MESSAGE);
+        } catch (java.text.ParseException ex) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Érvénytelen fizetés.",
+                "Hiba",
+                JOptionPane.ERROR_MESSAGE
+            );
         }
 
         ModifySalaryEmployee salaryModel = new ModifySalaryEmployee(actworker);
@@ -291,78 +301,69 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
         if (newSalary == salaryModel.getSalary()) {
             JOptionPane.showMessageDialog(this, "A jelenlegi fizetést adta meg. Nincs módosítás", "Jelenlegi fizetés", JOptionPane.WARNING_MESSAGE);
         } else {
-          salaryModel.updateSalary(newSalary);
-          lbempInfo.setText("<html><br><br>Dolgozó neve: "
-                  + actworker.getWorkerName() + "<br>Részleg neve: "
-                  + actworker.getDepartmentName() + "<br><br>Dolgozó jelenlegi fizetése: "
-                  + (int)salaryModel.getSalary() + "<br></html>");
+            salaryModel.updateSalary(newSalary);
+            lbempInfo.setText("<html><br><br>Dolgozó neve: "
+                    + actworker.getWorkerName() + "<br>Részleg neve: "
+                    + actworker.getDepartmentName() + "<br><br>Dolgozó jelenlegi fizetése: "
+                    + (int) salaryModel.getSalary() + "<br></html>");
 
-          //Ha pl elég közel van a fizu a menedzserhez
-          int max = (int) Math.min(salaryModel.getSalary() * 1.05, Math.max(salaryModel.getSalary(), salaryModel.getMaxSalary()));
+            int max = (int) Math.min(salaryModel.getSalary() * 1.05, Math.max(salaryModel.getSalary(), salaryModel.getMaxSalary()));
 
-          lbIncreaseMax.setText("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: "
-                  + (int) salaryModel.getMinSalary() + ", Max: "
-                  + max + ")</html>");
+            lbIncreaseMax.setText("<html>Fizetés módosítása <br>erre az összegre:<br>(Min: "
+                    + (int) salaryModel.getMinSalary() + ", Max: "
+                    + max + ")</html>");
 
-          spinnerSet((int)salaryModel.getSalary(), (int)salaryModel.getMinSalary(), max, spinnerIncrement);
+            spinnerSet((int) salaryModel.getSalary(), (int) salaryModel.getMinSalary(), max, spinnerIncrement);
         }
-  }
-
-  @Override
-  public void mouseClicked(MouseEvent e)
-  {
-    if (SwingUtilities.isRightMouseButton(e)) {
-      if (user.getAcl().equals("manager")) {
-        int row = treeDepEmpName.getClosestRowForLocation(e.getX(), e.getY());
-        treeDepEmpName.setSelectionRow(row);
-
-        JPopupMenu popup = new JPopupMenu();
-        miAdd_popup.addActionListener(this);
-        popup.add(miAdd_popup);
-        popup.show(e.getComponent(), e.getX(), e.getY());
-      } else {
-        e.consume();
-      }
     }
-  }
 
-  @Override
-  public void focusGained(FocusEvent e)
-  {
-  }
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+            if (user.getAcl().equals("manager")) {
+                int row = treeDepEmpName.getClosestRowForLocation(e.getX(), e.getY());
+                treeDepEmpName.setSelectionRow(row);
 
-  @Override
-  public void focusLost(FocusEvent e)
-  {
-    if(!((JFormattedTextField)e.getSource()).isEditValid())
-    {
-      btChangeSalary.setEnabled(false);
-      JOptionPane.showMessageDialog(this, "Érvénytelen fizetést adott meg!", "Hiba", JOptionPane.ERROR_MESSAGE);
-      btChangeSalary.setEnabled(true);
+                JPopupMenu popup = new JPopupMenu();
+                miAdd_popup.addActionListener(this);
+                popup.add(miAdd_popup);
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            } else {
+                e.consume();
+            }
+        }
     }
-  }
 
-  @Override
-  public void mousePressed(MouseEvent e)
-  {
+    @Override
+    public void focusGained(FocusEvent e) {
+    }
 
-  }
+    @Override
+    public void focusLost(FocusEvent e) {
+        if (!((JFormattedTextField) e.getSource()).isEditValid()) {
+            btChangeSalary.setEnabled(false);
+            JOptionPane.showMessageDialog(this, "Érvénytelen fizetést adott meg!", "Hiba", JOptionPane.ERROR_MESSAGE);
+            btChangeSalary.setEnabled(true);
+        }
+    }
 
-  @Override
-  public void mouseReleased(MouseEvent e)
-  {
+    @Override
+    public void mousePressed(MouseEvent e) {
 
-  }
+    }
 
-  @Override
-  public void mouseEntered(MouseEvent e)
-  {
+    @Override
+    public void mouseReleased(MouseEvent e) {
 
-  }
+    }
 
-  @Override
-  public void mouseExited(MouseEvent e)
-  {
+    @Override
+    public void mouseEntered(MouseEvent e) {
 
-  }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
 }
