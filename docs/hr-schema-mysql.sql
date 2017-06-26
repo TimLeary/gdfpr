@@ -2639,3 +2639,8 @@ VALUES (
 	);
     
 COMMIT;
+
+SET foreign_key_checks = 0;
+ALTER TABLE `employees` 
+CHANGE COLUMN `employee_id` `employee_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ;
+SET foreign_key_checks = 1;

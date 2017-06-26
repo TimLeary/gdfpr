@@ -38,7 +38,6 @@ public class NewEmployee implements Serializable
   {
     try {
       EmployeeInterface employee = (EmployeeInterface) Naming.lookup("rmi://localhost:1099/employee");
-      this.empId = employee.empIdQuery();
     } catch (MalformedURLException | NotBoundException | RemoteException ex) {
       ex.printStackTrace();
     }
@@ -141,4 +140,19 @@ public class NewEmployee implements Serializable
       return false;
     }
   }
+
+    @Override
+    public String toString() {
+        return "{\n" +
+            "\t" +"name: " + firstName + ", " + lastName + "\n" +
+            "\t" +"email: " + email + "\n" +
+            "\t" +"jobId: " + jobId + "\n" +
+            "\t" +"phoneNumber: " + phoneNumber + "\n" +
+            "\t" +"salary: " + salary + "\n" +
+            "\t" +"managerId: " + managerId + "\n" +
+            "\t" +"depId: " + depId +
+        "\n}";
+    }
+  
+  
 }

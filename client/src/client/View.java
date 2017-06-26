@@ -287,9 +287,6 @@ public class View extends JFrame implements ActionListener, TreeSelectionListene
 
         ModifySalaryEmployee salaryModel = new ModifySalaryEmployee(actworker);
         int newSalary = (Integer) spnIncreaseRate.getValue();
-        
-        
-        System.out.println(newSalary);
 
         if (newSalary == salaryModel.getSalary()) {
             JOptionPane.showMessageDialog(this, "A jelenlegi fizetést adta meg. Nincs módosítás", "Jelenlegi fizetés", JOptionPane.WARNING_MESSAGE);

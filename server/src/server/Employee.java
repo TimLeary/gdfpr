@@ -87,44 +87,25 @@ public class Employee extends UnicastRemoteObject implements EmployeeInterface, 
         return (int)actMaxSalary;
     }
 
-    @Override
-    public int empIdQuery() throws RemoteException
-    {
-        int empId=0;
-        Model.openConnection();
-        try {
-            PreparedStatement ps = Model.connection.prepareStatement(CURRENT_EMPLOYEE_ID);
-            ResultSet result = ps.executeQuery();
-            while (result.next()) {
-                empId = result.getInt("NEXTVAL");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        finally
-        {
-            Model.closeConnection();
-        }
-        return empId;
-    }
-
     public boolean setNewEmployee(NewEmployee newEmployee) throws RemoteException {
-
+        System.out.println(newEmployee);
         Model.openConnection();
 
         try {
             PreparedStatement ps = Model.connection.prepareStatement(CREATE_EMPLOYEE_NORMAL);
-            ps.setInt(1, newEmployee.getEmpId());
-            ps.setString(2, newEmployee.getFirstName());
-            ps.setString(3, newEmployee.getLastName());
-            ps.setString(4, newEmployee.getEmail());
-            ps.setString(5, newEmployee.getJobId());
-            ps.setString(6, newEmployee.getPhoneNumber());
-            ps.setDouble(7, newEmployee.getSalary());
-            ps.setInt(8, newEmployee.getManagerId());
-            ps.setInt(9, newEmployee.getDepId());
-            ps.executeQuery();
+            ps.setString(1, newEmployee.getFirstName());
+            ps.setString(2, newEmployee.getLastName());
+            ps.setString(3, newEmployee.getEmail());
+            ps.setString(4, newEmployee.getJobId());
+            ps.setString(5, newEmployee.getPhoneNumber());
+            ps.setDouble(6, newEmployee.getSalary());
+            ps.setInt(7, newEmployee.getManagerId());
+            ps.setInt(8, newEmployee.getDepId());
+            int affectedRows = ps.executeUpdate();
             
+            if (affectedRows == 0) {
+                throw new SQLException("Creating employee failed, no rows affected.");
+            }
 
             return true;
         } catch (SQLException e) {
